@@ -1,5 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config PHY_ZHIHE_SNPS_PCIE3
+	tristate "Zhihe Snps PCIe3 PHY Driver"
+	depends on (ARCH_ZHIHE && OF) || COMPILE_TEST
+	depends on HAS_IOMEM
+	select GENERIC_PHY
+	select MFD_SYSCON
+	help
+	  Enable this to support the ZHIHE snps PCIe3 PHY.
+
 config PHY_ZHIHE_SNPS_USB2
 	tristate "ZhiHe Synopsys USB 2.0 PHY driver"
 	depends on (ARCH_ZHIHE && OF) || COMPILE_TEST
