@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config PHY_ZHIHE_SNPS_USB2
+	tristate "ZhiHe Synopsys USB 2.0 PHY driver"
+	depends on (ARCH_ZHIHE && OF) || COMPILE_TEST
+	depends on HAS_IOMEM
+	select GENERIC_PHY
+	default USB_DWC3 if ARCH_ZHIHE
+	help
+	  Enable this to support the ZHIHE Snps USB 2.0 PHY.
+	  This driver provides PHY support for the USB 2.0 controllers
+	  on ZHIHE platforms.
