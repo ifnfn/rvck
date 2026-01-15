@@ -428,3 +428,7 @@
 	status = "disabled";
 };
 
+&usb3 {
+	dr_mode = "otg";
+	status = "okay";
+};
