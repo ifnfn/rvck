@@ -1,0 +1,550 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+#include <dt-bindings/i2c/i2c.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/clock/a210-clock.h>
+#include <dt-bindings/ata/ahci.h>
+
+/ {
+	reg_vref_1v8: regulator-adc-verf {
+		compatible = "regulator-fixed";
+		regulator-name = "vref-1v8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	soc {
+		peri1_sys: syscon@2010000{
+			compatible = "syscon";
+			reg = <0x00 0x02010000 0x0 0x1000>;
+		};
+
+		watchdog0: watchdog@305000 {
+			compatible = "snps,dw-wdt";
+			reg = <0x00 0x00305000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <331>;
+			clocks = <&clk_peri PERI0_WDT0_PCLK_EN>;
+			power-domains = <&power_top>;
+			clock-names = "tclk";
+			resets = <&rst PERI0_WDT0_PRST>;
+		};
+
+		rtc: rtc@30840000 {
+			compatible = "snps,dw-apb-rtc";
+			reg = <0x00 0x30840000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <18>;
+			clocks = <&osc_32k>;
+			clock-names = "osc_32k";
+			wakeup-source;
+			prescaler = <0x8000>;
+		};
+
+		dmac0: dmac@520000 {
+			compatible = "zhihe,a210-axi-dma";
+			reg = <0x00 0x00520000 0x0 0x4000>;
+			interrupt-parent = <&intc>;
+			interrupts = <264>;
+			clocks = <&clk_peri PERI3_DMAC_ACLK_EN>, <&clk_peri PERI3_DMAC_HCLK_EN>;
+			clock-names = "core-clk", "cfgr-clk";
+			resets = <&rst PERI3_DMAC_ARST>, <&rst PERI3_DMAC_HRST>;
+			reset-names= "peri3_dmac_arst", "peri3_dmac_hrst";
+			power-domains = <&power_top>;
+			#dma-cells = <1>;
+			dma-channels = <16>;
+			snps,block-size = <65536 65536 65536 65536
+					    65536 65536 65536 65536
+					    65536 65536 65536 65536
+					    65536 65536 65536 65536>;
+			snps,priority = <0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0>;
+			snps,dma-masters = <1>;
+			snps,data-width = <4>;
+			snps,axi-max-burst-len = <4>;
+		};
+
+		dmac1: tee_dmac@27540000 {
+			compatible = "zhihe,a210-axi-dma";
+			reg = <0x00 0x27540000 0x0 0x4000>;
+			interrupt-parent = <&intc>;
+			interrupts = <259>;
+			clocks = <&clk_peri TEE_DMAC_CLKEN>, <&clk_peri TEE_DMAC_CLKEN>;
+			clock-names = "core-clk", "cfgr-clk";
+			resets = <&rst TEE_DMAC_ARST>, <&rst TEE_DMAC_HRST>;
+			reset-names= "tee_dmac_arst", "tee_dmac_hrst";
+			#dma-cells = <1>;
+			dma-channels = <4>;
+			snps,block-size = <65536 65536 65536 65536>;
+			snps,priority = <0 0 0 0>;
+			snps,dma-masters = <1>;
+			snps,data-width = <4>;
+			snps,axi-max-burst-len = <16>;
+		};
+
+		uart0: serial@2014000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x02014000 0x0 0x400>;
+			interrupt-parent = <&intc>;
+			interrupts = <321>;
+			clocks = <&clk_peri PERI1_UART0_PCLK_EN>, <&clk_peri PERI1_UART0_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI1_UART0_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart1: serial@2015000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x02015000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <322>;
+			clocks = <&clk_peri PERI1_UART1_PCLK_EN>, <&clk_peri PERI1_UART1_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI1_UART1_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart2: serial@2016000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x02016000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <323>;
+			clocks = <&clk_peri PERI1_UART2_PCLK_EN>, <&clk_peri PERI1_UART2_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI1_UART2_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart3: serial@2017000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x02017000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <324>;
+			clocks = <&clk_peri PERI1_UART3_PCLK_EN>, <&clk_peri PERI1_UART3_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI1_UART3_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart4: serial@8401000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08401000 0x0 0x400>;
+			interrupt-parent = <&intc>;
+			interrupts = <325>;
+			clocks = <&clk_peri PERI2_UART4_PCLK_EN>, <&clk_peri PERI2_UART4_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART4_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+			current-speed = <115200>; /* OpenSBI */
+		};
+
+		uart5: serial@8402000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08402000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <326>;
+			clocks = <&clk_peri PERI2_UART5_PCLK_EN>, <&clk_peri PERI2_UART5_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART5_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart6: serial@8403000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08403000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <327>;
+			clocks = <&clk_peri PERI2_UART6_PCLK_EN>, <&clk_peri PERI2_UART6_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART6_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart7: serial@8404000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08404000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <328>;
+			clocks = <&clk_peri PERI2_UART7_PCLK_EN>, <&clk_peri PERI2_UART7_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART7_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart8: serial@8405000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08405000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <329>;
+			clocks = <&clk_peri PERI2_UART8_PCLK_EN>, <&clk_peri PERI2_UART8_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART8_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		uart9: serial@8406000 {
+			compatible = "snps,dw-apb-uart";
+			reg = <0x00 0x08406000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <330>;
+			clocks = <&clk_peri PERI2_UART9_PCLK_EN>, <&clk_peri PERI2_UART9_SCLK_EN>;
+			clock-names = "apb_pclk", "baudclk";
+			resets = <&rst PERI2_UART9_PRST>;
+			power-domains = <&power_top>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+		};
+
+		emmc: emmc@500000 {
+			compatible = "zhihe,a210-dwcmshc";
+			reg = <0x0 0x00500000 0x0 0x10000>;
+			interrupt-parent = <&intc>;
+			interrupts = <265>;
+			interrupt-names = "sdhciirq";
+			clocks = <&clk_peri PERI3_EMMC_SDIO_REF_CLK_CG_EN>,
+					 <&clk_peri PERI3_EMMC_HCLK_EN>;
+			clock-names = "core", "bus";
+			power-domains = <&power_emmc>;
+			clk-delay-mmc-hs200 = <50>;
+			clk-delay-mmc-hs400 = <24>;
+		};
+
+		sdhci0: sd@510000 {
+			compatible = "zhihe,a210-dwcmshc";
+			reg = <0x00 0x00510000 0x0 0x10000>;
+			interrupt-parent = <&intc>;
+			interrupts = <337>;
+			interrupt-names = "sdhci0irq";
+			clocks = <&clk_peri PERI3_EMMC_SDIO_REF_CLK_CG_EN>,
+					 <&clk_peri PERI3_SDIO_HCLK_EN>;
+			clock-names = "core", "bus";
+			power-domains = <&power_sdio>;
+			clk-delay-default = <46>;
+			clk-delay-uhs-sdr104 = <46>;
+		};
+
+		stmmac_axi_setup: stmmac-axi-config {
+			snps,wr_osr_lmt = <7>;
+			snps,rd_osr_lmt = <7>;
+			snps,blen = <16 8 4 0 0 0 0>;
+		};
+
+		gmac0_sys: syscon@210F000 {
+			compatible = "syscon";
+			reg = <0x00 0x0210f000 0x0 0x20>;
+		};
+
+		gmac1_sys: syscon@211F000 {
+			compatible = "syscon";
+			reg = <0x00 0x0211f000 0x0 0x20>;
+		};
+
+		gmac0: ethernet@2100000{
+			compatible = "zhihe,a210-dwmac", "snps,dwmac-5.20";
+			reg = <0x00 0x02100000 0x0 0x10000>;
+			reg-names = "gmac";
+			interrupt-parent = <&intc>;
+			interrupts = <277>;
+			interrupt-names = "macirq";
+			clocks = <&clk_peri PERI1_GMAC0_ACLK_EN>,
+				 <&clk_peri PERI1_GMAC0_HCLK_EN>,
+				 <&clk_peri PERI1_X2H_GMAC0_ACLK_EN>,
+				 <&clk_peri PERI1_X2H_GMAC0_HCLK_EN>;
+			clock-names = "aclk", "hclk", "x2h_aclk", "x2h_hclk";
+			resets = <&rst PERI1_GMAC0_X2H_RST>, <&rst PERI1_GMAC0_RST>;
+			reset-names = "stmmaceth", "ahb";
+			power-domains = <&power_top>;
+			snps,pbl = <32>;
+			snps,fixed-burst;
+			snps,axi-config = <&stmmac_axi_setup>;
+			snps,tso;
+			zhihe,gmacsys = <&gmac0_sys>;
+
+			mdio0: mdio {
+				compatible = "snps,dwmac-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+			};
+		};
+
+		gmac1: ethernet@2110000 {
+			compatible = "zhihe,a210-dwmac", "snps,dwmac-5.20";
+			reg = <0x00 0x02110000 0x0 0x10000>;
+			reg-names = "gmac";
+			interrupt-parent = <&intc>;
+			interrupts = <288>;
+			interrupt-names = "macirq";
+			clocks = <&clk_peri PERI1_GMAC1_ACLK_EN>,
+				 <&clk_peri PERI1_GMAC1_HCLK_EN>,
+				 <&clk_peri PERI1_X2H_GMAC1_ACLK_EN>,
+				 <&clk_peri PERI1_X2H_GMAC1_HCLK_EN>;
+			clock-names = "aclk", "hclk", "x2h_aclk", "x2h_hclk";
+			resets = <&rst PERI1_GMAC1_X2H_RST>, <&rst PERI1_GMAC1_RST>;
+			reset-names = "stmmaceth", "ahb";
+			power-domains = <&power_top>;
+			snps,pbl = <32>;
+			snps,fixed-burst;
+			snps,axi-config = <&stmmac_axi_setup>;
+			snps,tso;
+			zhihe,gmacsys = <&gmac1_sys>;
+			mdio1: mdio {
+				compatible = "snps,dwmac-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+			};
+		};
+
+		aon_padctrl: aon-padctrl@30848000 {
+			compatible = "zhihe,a210-pinctrl";
+			reg = <0x00 0x30848000 0x0 0x2000>;
+			clocks = <&aon_110m>;
+			clock-names = "pclk";
+			zhihe,group-id = <0>;
+		};
+
+		gpio@30841000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x30841000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&aon_110m>, <&osc_32k>;
+			clock-names = "bus", "db";
+
+			ao_gpio0: ao_gpio0-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <32>;
+				gpio-ranges = <&aon_padctrl 0 8 15>, <&aon_padctrl 21 23 11>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <17>;
+			};
+		};
+
+		gpio@30897000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x30897000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&aon_110m>, <&osc_32k>;
+			clock-names = "bus", "db";
+
+			ao_gpio1: ao_gpio1-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <10>;
+				gpio-ranges = <&aon_padctrl 0 34 10>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <10>;
+			};
+		};
+
+		peri1_padctrl: peri1-padctrl@2026000 {
+			compatible = "zhihe,a210-pinctrl";
+			reg = <0x00 0x02026000 0x0 0x1000>;
+			clocks = <&clk_peri PERI1_PAD_CTRL_PCLK_EN>;
+			clock-names = "pclk";
+			zhihe,group-id = <1>;
+		};
+
+		peri2_padctrl: peri2-padctrl@8411000 {
+			compatible = "zhihe,a210-pinctrl";
+			reg = <0x00 0x08411000 0x0 0x1000>;
+			clocks = <&clk_peri PERI2_PAD_CTRL_PCLK_EN>;
+			clock-names = "pclk";
+			zhihe,group-id = <2>;
+		};
+
+		peri3_padctrl: peri3-padctrl@542000 {
+			compatible = "zhihe,a210-pinctrl";
+			reg = <0x00 0x00542000 0x0 0x1000>;
+			clocks = <&clk_peri PERI3_PAD_CTRL_PCLK_EN>;
+			clock-names = "pclk";
+			zhihe,group-id = <3>;
+		};
+
+		gpio@2012000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x02012000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&clk_peri PERI1_GPIO0_PCLK_EN>,
+					<&clk_peri PERI1_GPIO0_DBCLK_EN>;
+			clock-names = "bus", "db";
+			power-domains = <&power_top>;
+
+			gpio0: gpio0-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <32>;
+				gpio-ranges = <&peri1_padctrl 0 0 32>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <289>;
+			};
+		};
+
+		gpio@2013000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x02013000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&clk_peri PERI1_GPIO1_PCLK_EN>,
+					<&clk_peri PERI1_GPIO1_DBCLK_EN>;
+			clock-names = "bus", "db";
+			power-domains = <&power_top>;
+
+			gpio1: gpio1-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <18>;
+				gpio-ranges = <&peri1_padctrl 0 32 18>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <290>;
+			};
+		};
+
+		gpio@8410000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x08410000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&clk_peri PERI2_GPIO2_PCLK_EN>,
+					<&clk_peri PERI2_GPIO2_DBCLK_EN>;
+			clock-names = "bus", "db";
+			power-domains = <&power_top>;
+
+			gpio2: gpio2-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <32>;
+				gpio-ranges = <&peri2_padctrl 0 0 32>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <291>;
+			};
+		};
+
+		gpio@8412000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x08412000 0x0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&clk_peri PERI2_GPIO3_PCLK_EN>,
+					<&clk_peri PERI2_GPIO3_DBCLK_EN>;
+			clock-names = "bus", "db";
+			power-domains = <&power_top>;
+
+			gpio3: gpio3-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <11>;
+				gpio-ranges = <&peri2_padctrl 0 32 11>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <292>;
+			};
+		};
+
+		gpio@550000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0x00 0x00550000 0x0 0x10000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&clk_peri PERI3_GPIO4_PCLK_EN>,
+					<&clk_peri PERI3_GPIO4_DBCLK_EN>;
+			clock-names = "bus", "db";
+			power-domains = <&power_top>;
+
+			gpio4: gpio4-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <6>;
+				gpio-ranges = <&peri3_padctrl 0 0 6>;
+				reg = <0>;
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				interrupt-parent = <&intc>;
+				interrupts = <52>;
+			};
+		};
+
+		mbox_920: mbox@0000310000 {
+			compatible = "zhihe,a210-mailbox";
+			reg = <0x00 0x00321000 0x0 0x1000>,
+			      <0x00 0x00320000 0x0 0x1000>,
+			      <0x00 0x00311000 0x0 0x1000>;
+			reg-names = "interrupt_addr",
+				    "local_addr0",
+				    "remote_icu0";
+			clocks = <&clk_peri PERI0_MBOX0_PCLK_EN>, <&clk_peri PERI0_MBOX1_PCLK_EN>;
+			resets = <&rst PERI0_MBOX0_PRST>, <&rst PERI0_MBOX1_PRST>;
+			interrupt-parent = <&intc>;
+			interrupts = <336 IRQ_TYPE_LEVEL_HIGH>;
+			icu_cpu_id = <0>;
+			#mbox-cells = <2>;
+			version = <1>;
+		};
+
+		aon: aon_subsys@308f8000 {
+			compatible = "zhihe,a210-aon";
+			reg = <0x00 0x308f8000 0x0 0x10000>,
+			      <0x00 0x30842018 0x0 0x4>,
+			      <0x00 0x30846144 0x0 0x4>;
+			reg-names = "aon_base_addr",
+				"aon_reset_reg",
+				"aon_sync_reg";
+			firmware-name = "a210-aon.bin";
+			mboxes = <&mbox_920 1 0>;
+			mbox-names = "aon0";
+			#mbox-cells = <2>;
+			version = <1>;
+		};
+	};
+};
