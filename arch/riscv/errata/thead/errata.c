@@ -19,6 +19,16 @@
 #include <asm/vendorid_list.h>
 #include <asm/vendor_extensions.h>
 
+static bool check_xuantie_family(unsigned long arch_id, unsigned long impid)
+{
+	if (arch_id != 0 || impid != 0) {
+		if (impid == 0x100d000 || impid == 0x20c4000)
+			return true;
+		return false;
+	}
+	return true;
+}
+
 static bool errata_probe_pbmt(unsigned int stage,
 			      unsigned long arch_id, unsigned long impid)
 {
@@ -57,7 +67,7 @@ static bool errata_probe_cmo(unsigned int stage,
 	if (!IS_ENABLED(CONFIG_ERRATA_THEAD_CMO))
 		return false;
 
-	if (arch_id != 0 || impid != 0)
+	if (!check_xuantie_family(arch_id, impid))
 		return false;
 
 	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
@@ -78,7 +88,7 @@ static bool errata_probe_pmu(unsigned int stage,
 		return false;
 
 	/* target-c9xx cores report arch_id and impid as 0 */
-	if (arch_id != 0 || impid != 0)
+	if (!check_xuantie_family(arch_id, impid))
 		return false;
 
 	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
