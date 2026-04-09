@@ -1452,5 +1452,36 @@
 			snps,need-phy-for-wake;
 		};
 
+		mbox_920: mailbox@310000 {
+			compatible = "zhihe,a210-mailbox-v2";
+			reg = <0x00 0x00321000 0x0 0x1000>,
+			      <0x00 0x00320000 0x0 0x1000>,
+			      <0x00 0x00311000 0x0 0x1000>;
+			reg-names = "interrupt",
+				    "local0",
+				    "remote0";
+			clocks = <&clk_peri PERI0_MBOX0_PCLK_EN>,
+				 <&clk_peri PERI0_MBOX1_PCLK_EN>;
+			resets = <&rst_peri0 PERI0_MBOX0_PRST>,
+				 <&rst_peri0 PERI0_MBOX1_PRST>;
+			interrupt-parent = <&intc>;
+			interrupts = <336>;
+			zhihe,icu-cpu-id = <0>;
+			#mbox-cells = <2>;
+		};
+
+		aon: aon-subsys@308f8000 {
+			compatible = "zhihe,a210-aon";
+			reg = <0x00 0x308f8000 0x0 0x10000>,
+			      <0x00 0x30842018 0x0 0x4>,
+			      <0x00 0x30846144 0x0 0x4>;
+			reg-names = "aon-base",
+				"aon-reset",
+				"aon-sync";
+			firmware-name = "a210-aon.bin";
+			mboxes = <&mbox_920 1 0>;
+			mbox-names = "aon0";
+			#mbox-cells = <2>;
+		};
 	};
 };
