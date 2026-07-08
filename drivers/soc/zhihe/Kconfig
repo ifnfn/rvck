@@ -2,6 +2,26 @@
 
 menu "ZHIHE SoC drivers"
 
+config A210_MEMTESTER
+	tristate "ZHIHE A210 memtester support"
+	default y
+	help
+	  This driver supports A210 memtester feature for DDR
+	  memory verification. It provides a way to test and
+	  validate DDR memory integrity on the ZhiHe A210 SoC.
+	  Say Y or M here if you need DDR memory testing support.
+
+config A210_POWER_DOMAIN
+	bool "A210 Power Domain driver"
+	depends on PM
+	select PM_GENERIC_DOMAINS
+	default n
+	help
+	  This is the power domain driver that controls PCU/PPU for
+	  the A210 SoC. It manages power gating of various hardware
+	  subsystems to reduce overall power consumption.
+	  Say Y here if you are building a kernel for the ZhiHe A210.
+
 config A210_BMU
 	tristate "A210 bmu driver"
 	default n
@@ -10,5 +30,14 @@ config A210_BMU
 	  (BMU). It enables bus performance monitoring and tracing
 	  for debugging and profiling purposes.
 	  Say Y or M here if you need BMU bus monitoring support.
+
+config ZH_IOPMP
+	tristate "ZhiHe iopmp Support"
+	depends on ARCH_ZHIHE || COMPILE_TEST
+	help
+	  Say Y here to include support for zhihe iopmp found on
+	  A210 fullmask devices.
+	  To compile this driver as a module, choose M here: the module
+	  will be called zh-iopmp.
 
 endmenu
