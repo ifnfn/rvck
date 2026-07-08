@@ -22,6 +22,16 @@ config SOC_SIFIVE
 	help
 	  This enables support for SiFive SoC platform hardware.
 
+config ARCH_ZHIHE
+	bool "ZhiHe SoCs"
+	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
+	help
+	  This enables support for ZhiHe SoC platform hardware.
+
+	  ZhiHe SoCs are RISC-V based application processors with
+	  integrated peripherals including clock controllers, power
+	  domains, and reset controllers.
+
 config ARCH_SOPHGO
 	bool "Sophgo SoCs"
 	select DW_APB_TIMER_OF
