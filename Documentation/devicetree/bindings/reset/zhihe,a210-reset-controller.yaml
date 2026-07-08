@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/reset/zhihe,a210-reset-controller.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Zhihe A210 Reset Controller
+
+maintainers:
+  - Zhiguo Zhu <zhiguo.zhu@linux.alibaba.com>
+
+description:
+  Reset controller for the Zhihe A210 SoC. It aggregates the reset
+  registers of multiple subsystems, each described by a named register
+  region, and exposes reset lines to consumers through the reset-cells
+  interface.
+
+properties:
+  compatible:
+    const: zhihe,a210-reset-controller
+
+  reg:
+    minItems: 1
+    maxItems: 12
+
+  reg-names:
+    minItems: 1
+    maxItems: 12
+    items:
+      enum:
+        - VP_RST
+        - VI_RST
+        - NPU_RST
+        - VO_RST
+        - PERI0_RST
+        - PERI1_RST
+        - PERI2_RST
+        - PERI3_RST
+        - PCIE_RST
+        - USB_RST
+        - TEE_RST
+        - GPU_RST
+
+  "#reset-cells":
+    const: 1
+
+required:
+  - compatible
+  - reg
+  - reg-names
+  - "#reset-cells"
+
+additionalProperties: false
+
+examples:
+  - |
+    reset-controller {
+        compatible = "zhihe,a210-reset-controller";
+        reg = <0x06b20400 0x200>;
+        reg-names = "VP_RST";
+        #reset-cells = <1>;
+    };
