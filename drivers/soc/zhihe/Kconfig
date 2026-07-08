@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+menu "ZHIHE SoC drivers"
+
+config A210_BMU
+	tristate "A210 bmu driver"
+	default n
+	help
+	  This driver provides support for the A210 Bus Monitor Unit
+	  (BMU). It enables bus performance monitoring and tracing
+	  for debugging and profiling purposes.
+	  Say Y or M here if you need BMU bus monitoring support.
+
+endmenu
