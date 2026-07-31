@@ -1209,6 +1209,82 @@
 			reg-io-width = <4>;
 		};
 
+		spi0: spi@2023000 {
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x00 0x02023000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <310>;
+			clocks = <&clk_peri PERI1_SPI0_SSI_CLK_EN>,
+				 <&clk_peri PERI1_SPI0_PCLK_EN>;
+			clock-names = "sclk", "pclk";
+			resets = <&rst_peri1 PERI1_SPI0_RST>;
+			reset-names = "spi";
+			power-domains = <&power_top>;
+			dmas = <&dmac0 9>, <&dmac0 8>;
+			dma-names = "tx", "rx";
+			dma-tx-addr-incr;
+			dma-rx-addr-incr;
+			reg-map-size = <144>;
+			num-cs = <2>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		spi1: spi@8413000 {
+			compatible = "snps,dw-apb-ssi";
+			reg = <0x00 0x08413000 0x0 0x1000>;
+			interrupt-parent = <&intc>;
+			interrupts = <311>;
+			clocks = <&clk_peri PERI2_SPI1_SSI_CLK_EN>,
+				 <&clk_peri PERI2_SPI1_PCLK_EN>;
+			clock-names = "sclk", "pclk";
+			resets = <&rst_peri2 PERI2_SPI1_RST>;
+			reset-names = "spi";
+			power-domains = <&power_top>;
+			dmas = <&dmac0 62>, <&dmac0 61>;
+			dma-names = "tx", "rx";
+			dma-tx-addr-incr;
+			dma-rx-addr-incr;
+			reg-map-size = <144>;
+			num-cs = <2>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		qspi0: spi@1000000 {
+			compatible = "snps,dw-apb-ssi-quad";
+			reg = <0x00 0x01000000 0x0 0x4000>;
+			interrupt-parent = <&intc>;
+			interrupts = <308>;
+			clocks = <&clk_peri PERI1_QSPI0_SSI_CLK_EN>,
+				 <&clk_peri PERI1_QSPI0_PCLK_EN>;
+			clock-names = "sclk", "pclk";
+			resets = <&rst_peri1 PERI1_QSPI0_SSI_RST>,
+				 <&rst_peri1 PERI1_QSPI0_PRST>;
+			reset-names = "srst", "prst";
+			power-domains = <&power_top>;
+			num-cs = <2>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		qspi1: spi@8428000 {
+			compatible = "snps,dw-apb-ssi-quad";
+			reg = <0x00 0x08428000 0x0 0x4000>;
+			interrupt-parent = <&intc>;
+			interrupts = <309>;
+			clocks = <&clk_peri PERI2_QSPI1_SSI_CLK_EN>,
+				 <&clk_peri PERI2_QSPI1_PCLK_EN>;
+			clock-names = "sclk", "pclk";
+			resets = <&rst_peri2 PERI2_QSPI1_SSI_RST>,
+				 <&rst_peri2 PERI2_QSPI1_PRST>;
+			reset-names = "srst", "prst";
+			power-domains = <&power_top>;
+			num-cs = <2>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
 		emmc: emmc@500000 {
 			compatible = "zhihe,a210-dwcmshc";
 			reg = <0x0 0x00500000 0x0 0x10000>;
