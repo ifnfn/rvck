@@ -557,6 +557,10 @@
 	status = "disabled";
 };
 
+&peri3_gpio {
+	status = "disabled";
+};
+
 /* Match upstream-old-1 EVB: keep the second GMAC disabled by default. */
 &gmac1 {
 	status = "disabled";
