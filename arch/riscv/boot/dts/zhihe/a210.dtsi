@@ -690,6 +690,103 @@
 					       <377142858>;
 			status = "okay";
 		};
+
+		power: power-controller {
+			compatible = "zhihe,a210-power-domain";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			power_top: power-domain-top {
+				compatible = "zhihe,a210-pd-top";
+				#power-domain-cells = <0>;
+				#address-cells = <2>;
+				#size-cells = <2>;
+				ranges;
+				iopmps = <&device_aon_iopmp>,
+					 <&device_gmac_0_iopmp>,
+					 <&device_gmac_1_iopmp>,
+					 <&device_gmac_2_iopmp>,
+					 <&device_peri1_mt_iopmp>,
+					 <&device_dmac_ap_iopmp>,
+					 <&device_emmc_iopmp>,
+					 <&device_sd_iopmp>;
+				ddr_ccu: clock-controller@5910000 {
+					compatible = "zhihe,a210-ccu";
+					reg = <0x00 0x05910000 0x0 0x2C>,
+					      <0x00 0x05920000 0x0 0x2C>;
+					zhihe,ccu-dly-time = <0x5E 0x5E>;
+					zhihe,ccu-dly-time-step = <0x3 0x3>;
+				};
+				pcie_ccu: clock-controller@a007400 {
+					compatible = "zhihe,a210-ccu";
+					reg = <0x00 0x0A007400 0x0 0x2C>,
+					      <0x00 0x0A008000 0x0 0x2C>,
+					      <0x00 0x0A008400 0x0 0x2C>;
+					zhihe,ccu-dly-time = <0x5E 0x5E 0x5E>;
+					zhihe,ccu-dly-time-step = <0x3 0x3 0x3>;
+				};
+				tee_ccu: clock-controller@27430000 {
+					compatible = "zhihe,a210-ccu";
+					reg = <0x00 0x27430000 0x0 0x2C>;
+					zhihe,ccu-dly-time = <0x5E>;
+					zhihe,ccu-dly-time-step = <0x3>;
+				};
+				cpu_gating_ccu: clock-controller@10140000 {
+					compatible = "zhihe,a210-ccu";
+					reg = <0x00 0x10140000 0x0 0x2C>,
+					      <0x00 0x10140200 0x0 0x2C>,
+					      <0x00 0x10140400 0x0 0x2C>,
+					      <0x00 0x10140600 0x0 0x2C>,
+					      <0x00 0x10140A00 0x0 0x2C>,
+					      <0x00 0x10140C00 0x0 0x2C>,
+					      <0x00 0x10204000 0x0 0x2C>,
+					      <0x00 0x10204200 0x0 0x2C>,
+					      <0x00 0x10204400 0x0 0x2C>,
+					      <0x00 0x10204600 0x0 0x2C>,
+					      <0x00 0x10204800 0x0 0x2C>,
+					      <0x00 0x10204A00 0x0 0x2C>,
+					      <0x00 0x10205400 0x0 0x2C>;
+					zhihe,ccu-dly-time = <0x34 0x34 0x34
+							      0x34 0x34 0x34
+							      0x34 0x34 0x34
+							      0x34 0x34 0x34
+							      0x34>;
+					zhihe,ccu-dly-time-step = <0x2 0x2 0x2
+								   0x2 0x2 0x2
+								   0x2 0x2 0x2
+								   0x2 0x2 0x2
+								   0x2>;
+				};
+				cpu_scaling_ccu: clock-controller@10140800 {
+					compatible = "zhihe,a210-ccu";
+					reg = <0x00 0x10140800 0x0 0x2C>;
+					zhihe,ccu-mode = <1>;
+					zhihe,ccu-dly-time = <0x34>;
+					zhihe,ccu-dly-time-step = <0x2>;
+					zhihe,ccu-ratio = <63>;
+				};
+			};
+			power_emmc: power-domain-emmc {
+				compatible = "zhihe,a210-pd-emmc";
+				power-domains = <&power_top>;
+				#power-domain-cells = <0>;
+				clocks = <&clk_peri PERI3_EMMC_ACLK_EN>,
+					<&clk_peri PERI3_EMMC_X2X_ACLK_S_EN>,
+					<&clk_peri PERI3_EMMC_X2X_ACLK_M_EN>,
+					<&clk_peri PERI3_EMMC_OSC_CLK_EN>;
+			};
+			power_sdio: power-domain-sdio {
+				compatible = "zhihe,a210-pd-sdio";
+				power-domains = <&power_top>;
+				#power-domain-cells = <0>;
+				clocks = <&clk_peri PERI3_SDIO_ACLK_EN>,
+					<&clk_peri PERI3_SDIO_X2X_ACLK_S_EN>,
+					<&clk_peri PERI3_SDIO_X2X_ACLK_M_EN>,
+					<&clk_peri PERI3_SDIO_OSC_CLK_EN>;
+			};
+		};
+
 		rst_vp: reset-controller@6b20400 {
 			compatible = "zhihe,a210-vp-reset";
 			reg = <0x00 0x06b20400 0x0 0x200>;
@@ -925,6 +1022,7 @@
 			interrupt-parent = <&intc>;
 			interrupts = <331>;
 			clocks = <&clk_peri PERI0_WDT0_PCLK_EN>;
+			power-domains = <&power_top>;
 			clock-names = "tclk";
 			resets = <&rst_peri0 PERI0_WDT0_PRST>;
 		};
