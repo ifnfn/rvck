@@ -822,6 +822,88 @@
 				#clock-cells = <0>;
 			};
 		};
+
+		iopmp_regions: iopmp-regions {
+			#address-cells = <2>;
+			#size-cells = <2>;
+
+			bypass_region: bypass-region {
+				reg = <0x00 0x00 0x80 0x00>;
+				permission = "rwx";
+				mode = "TOR";
+			};
+		};
+
+		iopmp: iopmp-controller {
+			compatible = "zhihe,a210-iopmp";
+			reg = <0x00 0x26B12000 0x00 0x1000>,
+			      <0x00 0x26372000 0x00 0x1000>,
+			      <0x00 0x27102000 0x00 0x1000>,
+			      <0x00 0x26712000 0x00 0x1000>,
+			      <0x00 0x22032000 0x00 0x1000>,
+			      <0x00 0x2A012000 0x00 0x1000>,
+			      <0x00 0x28022000 0x00 0x1000>,
+			      <0x00 0x26D12000 0x00 0x1000>,
+			      <0x00 0x29032000 0x00 0x1000>,
+			      <0x00 0x30150000 0x00 0x1000>;
+			reg-names = "vp-iopmp", "vi-iopmp", "npu-iopmp",
+				    "vo-iopmp", "peri1-iopmp", "pcie-iopmp",
+				    "usb-iopmp", "gpu-iopmp", "d2d-rx-iopmp",
+				    "d2d-ss-iopmp";
+		};
+
+		iopmp-devices {
+			/* PCIE iopmp */
+			device_dmac_ap_iopmp: dmac-ap-iopmp {
+				iopmp-name = "pcie-iopmp";
+				device-id = <0x02>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_sd_iopmp: sd-iopmp {
+				iopmp-name = "pcie-iopmp";
+				device-id = <0x06>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_emmc_iopmp: emmc-iopmp {
+				iopmp-name = "pcie-iopmp";
+				device-id = <0x08>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			/* PERI1 iopmp */
+			device_peri1_mt_iopmp: peri1-mt-iopmp {
+				iopmp-name = "peri1-iopmp";
+				device-id = <0x01>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_gmac_0_iopmp: gmac-0-iopmp {
+				iopmp-name = "peri1-iopmp";
+				device-id = <0x03>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_gmac_1_iopmp: gmac-1-iopmp {
+				iopmp-name = "peri1-iopmp";
+				device-id = <0x04>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_gmac_2_iopmp: gmac-2-iopmp {
+				iopmp-name = "peri1-iopmp";
+				device-id = <0x05>;
+				iopmp-regions = <&bypass_region>;
+			};
+
+			device_aon_iopmp: aon-iopmp {
+				iopmp-name = "peri1-iopmp";
+				device-id = <0x37>;
+				iopmp-regions = <&bypass_region>;
+			};
+		};
+
 		pvt: pvt@3084C000 {
 			compatible = "moortec,mr75203";
 			reg = <0x00 0x3084c000 0x0 0x80>,
