@@ -61,6 +61,8 @@ patternProperties:
       '#gpio-cells':
         const: 2
 
+      gpio-ranges: true
+
       gpio-line-names:
         minItems: 1
         maxItems: 32
