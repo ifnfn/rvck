@@ -531,3 +531,7 @@
 &peri3_gpio {
 	status = "disabled";
 };
+
+&dmac1 {
+	status = "disabled";
+};
